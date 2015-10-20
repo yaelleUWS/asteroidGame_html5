@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+    <head>
+        <script src="js/phaser.js"></script>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/engage.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+        <script src="scenes/boot.js"></script>
+        <script src="scenes/preLoad.js"></script>
+        <script src="scenes/loginScene.js"></script>
+        <script src="scenes/questionsScene.js"></script>
+        <script src="scenes/menuScene.js"></script>
+        <script src="scenes/gameScene.js"></script>
+
+        <title>Asteroid game</title>
+
+        <script src="js/badges.js"></script>
+            <style>
+                body{margin:0}
+            </style>
+        <script>
+            (function() {
+                var game = new Phaser.Game(800, 450, Phaser.CANVAS, "eu_game");
+                game.state.add("Boot", boot);
+                game.state.add("Preload", preload);
+                game.state.add("Login", login);
+                game.state.add("Questions", questions);
+                game.state.add("Menu", menu);
+                game.state.add("Game", eumouse);
+
+                game.state.start("Boot");
+            })();    
+        </script>
+    </head>
+    <body>
+        <div id="form_inputs">
+        </div>
+        <div id="eu_game" style="margin-left: 25px; margin-top:25px">            
+        </div>
+        <div>
+            <h4> Your feedback from the game: </h4>
+            <ul id="feedback">
+                
+            </ul>
+        </div>
+    </body>
+</html>
