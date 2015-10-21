@@ -186,9 +186,12 @@ menu.prototype = {
 		leaderBoardPanel.add(title);
 
 		var txt_leaderboard = "";
-		for (var i=0 ; i < leaderboard.length ; i++)
+		if (leaderboard)
 		{
-			txt_leaderboard += leaderboard[i]["name"] + " - " + leaderboard[i]["score"] + "\n";
+			for (var i=0 ; i < leaderboard.length ; i++)
+			{
+				txt_leaderboard += leaderboard[i]["name"] + " - " + leaderboard[i]["score"] + "\n";
+			}
 		}
 
 		txt_info = new Phaser.Text(this.game, 400, 120, txt_leaderboard, {font: '15pt Arial', wordWrap: true, wordWrapWidth: '500'});

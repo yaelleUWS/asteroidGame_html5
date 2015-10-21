@@ -8,7 +8,7 @@ var login = function(game){
     password_inputText = "";
     
     // Set the unique ID for your serious game  
-    idSG = 161;
+    idSG = 179;
 
 	session = {};
 };
@@ -21,14 +21,14 @@ login.prototype = {
     	var gameTitle = this.game.add.sprite(400,70,"gametitle");
 		gameTitle.anchor.setTo(0.5,0.5);
 
-		username_tag = this.game.add.text(200, 180, 'Username', { fontSize: '20px', fill: '#000' });
-		password_tag = this.game.add.text(200, 230, 'Password', { fontSize: '20px', fill: '#000' });
+		username_tag = this.game.add.text(130, 180, 'Username', { fontSize: '20px', fill: '#fff' });
+		password_tag = this.game.add.text(130, 230, 'Password', { fontSize: '20px', fill: '#000' });
 
-		$("#form_inputs").append('<input type="text" class="form-control" id="username" value="">');
-		$("#username").css({"position": "absolute", "top": "200px", "left": "375px", "width": "300px"});
+		$("#form_inputs").append('<input type="text" class="form-control" id="username" placeholder="enter your username" value="">');
+		$("#username").css({"position": "absolute", "top": "200px", "left": "350px", "width": "300px"});
 
-		$("#form_inputs").append('<input type="password" class="form-control" id="password" value="">');
-		$("#password").css({"position": "absolute", "top": "250px", "left": "375px", "width": "300px"});
+		$("#form_inputs").append('<input type="password" class="form-control" id="password" placeholder="enter your password" value="">');
+		$("#password").css({"position": "absolute", "top": "250px", "left": "350px", "width": "300px"});
 
     	var loginButton = this.game.add.button(400,330,"btn_login",this.loginToGame,this);
 		loginButton.anchor.setTo(0.5,0.5);
