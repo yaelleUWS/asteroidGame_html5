@@ -26,6 +26,11 @@ var astGame = function(game){
     posibleQuestions = [];
     posibleMathEquations = [];
 
+    var lastQuestion;
+    var lastAction;
+
+    var enterKey;
+
     var gameOverPanel;
 
     var isGameOver;
@@ -82,6 +87,9 @@ astGame.prototype = {
         $("#form_inputs").empty();
         $("#form_inputs").append('<input type="text" class="form-control" id="answer" placeholder="write your answer here">');
         $("#answer").css({"position": "absolute", "top": "440px", "left": "230px", "width": "400px"});
+
+            // listen for "Enter" key
+        enterKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
 
 
         // *** The asteroids ***
@@ -155,14 +163,22 @@ astGame.prototype = {
                 degrees = radians * (180/Math.PI);
                         
                 // 23/30 is good spped
-                this.game.physics.arcade.velocityFromAngle(degrees, 70 * speedSlow, asteroids.children[i].body.velocity);
+                this.game.physics.arcade.velocityFromAngle(degrees, 40 * speedSlow, asteroids.children[i].body.velocity);
+            }
 
+            // *** Move bullet towards asteroid ***
+            for (var i = 0, len = bullets.children.length; i < len; i++) {
+                radians = this.game.physics.arcade.angleBetween(bullets.children[i], asteroids.children[asteroids.children.length-2]);
+        
+                degrees = radians * (180/Math.PI);
+                        
+                // 23/30 is good spped
+                this.game.physics.arcade.velocityFromAngle(degrees, 100, bullets.children[i].body.velocity);
             }
 
 
             // *** if enter is hit, submit  ***
-
-            // TODO
+            enterKey.onDown.add(this.submitAnswer,this);
         }
     },
     speedGame: function() {
@@ -240,7 +256,6 @@ astGame.prototype = {
         for (var c = 0 ; c<posibleColours.length ; c++)
         {
             var indexColour = 3+3*c;
-            console.log("text changed to "+ posibleColours[c] + " from index number: " + indexColour);
             scoreText.addColor(posibleColours[c], indexColour);
         }
         scoreText.addColor("white", scoreText.text.length-1);
@@ -297,6 +312,14 @@ astGame.prototype = {
                 else if (feedback[i]["name"] == "slowGame")
                 {
                     this.slowGame();
+                }
+                else if (feedback[i]["name"] == "fireBulletAtAsteroid")
+                {
+                    this.fireBullet(feedback[i]["message"]);
+                }
+                else if (feedback[i]["name"] == "loseBullet")
+                {
+                    this.loseBullet();
                 }
                 this.displayFeedback(feedback[i]["message"],  
                                                feedback[i]["type"]);
@@ -398,29 +421,69 @@ astGame.prototype = {
              asteroid.kill();
          }
     },
-    protectPlanet: function (bullet, asteroid) {   
+    protectPlanet: function (bullet, asteroid) {  
+        if (!asteroid.text)
+        {        
+            //  *** update animations ***
+            planet.animations.play('happy');
 
-        var question = "..."; // TODO ?
-        var answer = "..."; //TODO get value from text input
+            // Removes the asteroid from the screen    
+            var index = allAsteroids.indexOf(asteroid);    
+            // kill text
+            asteroidsKilled++;
+            allAsteroidTexts[index].kill();
+
+            // kill asteroid
+            asteroidsKilled++;
+            asteroid.kill();
+
+            // kill bullet
+            bullet.kill();  
+        }
+    }, 
+    fireBullet: function (question) {
+        bullet = bullets.create(planet.x, planet.y, "bullet");
+        bullet.anchor.setTo(0.5,0.5);
+        bullet.scale.setTo(0.25); 
+
+        this.game.physics.arcade.enable(bullet);
+    },
+    loseBullet: function () {
+        console.log("Losing bullet!");
+    },
+    submitAnswer: function () { 
+        var assessment = allAssessments[allAssessments.length-1];
+        var question = assessment["question"];
+        var answer = $("#answer").val();
+        var colour = assessment["asteroidColor"];
+        var correctAnswer = allAnswers[allAssessments.length-1];
+
+        var action = "answerQuestion";
+        var values = {"question": question, "answer": answer, "asteroidColor": colour};
 
         // assess action with EngAGe
-        var values = {"question": question, "answer": answer, "asteroidColor": asteroid.key};
-        var action = (asteroid.key == "grey")? "answerQuestion" : "answerMathEquation";
-        var astgame = this;
+        if (assessment["sign"])
+        {
+            action = "answerMathEquation";
+            var isAnswerCorrect = (answer == correctAnswer);
+           // values = {"sign": assessment["sign"], "question": question, "answer": answer, 
+            //                            "answerCorrect": isAnswerCorrect, "asteroidColor": colour};
+            values = {"sign": assessment["sign"], "answerCorrect": isAnswerCorrect, "asteroidColor": colour};
+        }
 
+
+        console.log(action);
+        console.log(values);
+
+        var astgame = this;
         gameplay.assess(action, values)
         .done(function(response){
+            console.log(response);
             astgame.updateScores(response["scores"]);             
             astgame.updateFeedback(response["feedback"]);
+        });   
 
-        });
-
-         //  *** update animations ***
-         player.animations.play('happy');
-
-        // Removes the asteroid from the screen        
-         asteroidsKilled++;
-        asteroid.kill();        
+        $("#answer").val('');     
     },
     checkOverlap: function (obj1, obj2) {
         return (this.game.physics.arcade.distanceBetween(obj1, obj2) < (obj1.width/2 + obj2.width/2 - 10));
@@ -443,11 +506,12 @@ astGame.prototype = {
             var choice = availableChoices[this.getRandomInt(0, availableChoices.length-1)];
 
             var question = choice["question"];
+            var sign = choice["sign"];
             var answer = choice["answer"];
             var asteroidColor = choice["asteroidColor"];
             var correctAnswer = answer;
 
-            switch(question) {
+            switch(sign) {
                 case "multiplication":
                     var1 = this.getRandomInt(0, 10);
                     var2 = this.getRandomInt(0, 10);

@@ -44,6 +44,8 @@ preload.prototype = {
 		this.game.load.image('purple', 'sprites/game/purple.gif');
 		this.game.load.image('brown', 'sprites/game/brown.gif');
 
+		this.game.load.image('bullet', 'sprites/game/fireball.png');
+
 
 	    this.game.load.spritesheet('planet', 'sprites/game/planetSprites.png', 610, 658);
 
