@@ -29,21 +29,23 @@ preload.prototype = {
 		this.game.load.image("badgeLocked", "sprites/badges/lock_BW.png");
 
 		// scores		
-		this.game.load.image("eu", "sprites/game/coin.png");
+		this.game.load.image("score", "sprites/game/coin.png");
+		this.game.load.image("empty_healthbar", "sprites/game/empty_healthbar.gif");
+		this.game.load.image("full_healthbar", "sprites/game/full_healthbar.png");
 
 		// Game assets
-		this.game.load.image('bgAll', 'sprites/game/bgGame.png');
-		this.game.load.image('bgAll', 'sprites/game/grey.png');
-		this.game.load.image('bgAll', 'sprites/game/red.gif');
-		this.game.load.image('bgAll', 'sprites/game/green.gif');
-		this.game.load.image('bgAll', 'sprites/game/blue.gif');
-		this.game.load.image('bgAll', 'sprites/game/yellow.gif');
-		this.game.load.image('bgAll', 'sprites/game/orange.gif');
-		this.game.load.image('bgAll', 'sprites/game/purple.gif');
-		this.game.load.image('bgAll', 'sprites/game/brown.gif');
+		this.game.load.image('bg', 'sprites/game/bgGame.png');
+		this.game.load.image('grey', 'sprites/game/grey.png');
+		this.game.load.image('red', 'sprites/game/red.gif');
+		this.game.load.image('green', 'sprites/game/green.gif');
+		this.game.load.image('blue', 'sprites/game/blue.gif');
+		this.game.load.image('yellow', 'sprites/game/yellow.gif');
+		this.game.load.image('orange', 'sprites/game/orange.gif');
+		this.game.load.image('purple', 'sprites/game/purple.gif');
+		this.game.load.image('brown', 'sprites/game/brown.gif');
 
 
-	    this.game.load.spritesheet('mouse', 'sprites/game/planetSprites.png', 610, 658);
+	    this.game.load.spritesheet('planet', 'sprites/game/planetSprites.png', 610, 658);
 
 	    this.loadBadges();
 

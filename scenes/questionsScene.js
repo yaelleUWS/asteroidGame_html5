@@ -26,7 +26,7 @@ questions.prototype = {
     	var gameTitle = this.game.add.sprite(400,65,"gametitle");
 		gameTitle.anchor.setTo(0.5,0.5);
 
-		username_tag = this.game.add.text(100, 130, 'Hello '+username+'! Before you start, please answer a few questions:', { fontSize: '20px', fill: '#000' });
+		username_tag = this.game.add.text(100, 130, 'Hello '+username+'! Before you start, please answer a few questions:', { fontSize: '20px', fill: '#fff' });
 
 		// questions
 		for (var i=0; i<questions.length; i++)

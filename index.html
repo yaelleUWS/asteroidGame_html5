@@ -22,13 +22,13 @@
             </style>
         <script>
             (function() {
-                var game = new Phaser.Game(800, 450, Phaser.CANVAS, "eu_game");
+                var game = new Phaser.Game(800, 450, Phaser.CANVAS, "ast_game");
                 game.state.add("Boot", boot);
                 game.state.add("Preload", preload);
                 game.state.add("Login", login);
                 game.state.add("Questions", questions);
                 game.state.add("Menu", menu);
-                game.state.add("Game", eumouse);
+                game.state.add("Game", astGame);
 
                 game.state.start("Boot");
             })();    
@@ -37,7 +37,7 @@
     <body>
         <div id="form_inputs">
         </div>
-        <div id="eu_game" style="margin-left: 25px; margin-top:25px">            
+        <div id="ast_game" style="margin-left: 25px; margin-top:25px">            
         </div>
         <div>
             <h4> Your feedback from the game: </h4>

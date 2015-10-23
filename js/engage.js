@@ -131,7 +131,12 @@ window.engage = (function ($) {
     GamePlay.prototype.endGameplay = function (win) {
         var end = win ? 'win' : 'lose';
         var url = baseURL + '/gameplay/' + this.idGameplay + '/end/' + end;        
-        return $.ajax({url: url, method: "POST", contentType:"application/json;"});
+        return $.ajax({url: url, method: "POST"});
+    };
+    
+    GamePlay.prototype.endGameplayNoWinLose = function () {
+        var url = baseURL + '/gameplay/' + this.idGameplay + '/end/end';        
+        return $.ajax({url: url, method: "POST"});
     };
 
     GamePlay.prototype.getFeedback = function () {
@@ -140,6 +145,7 @@ window.engage = (function ($) {
         // todo update badges
         return $.getJSON(url);
     };
+
 
     GamePlay.prototype.getScores = function () {
         var url = baseURL + '/gameplay/' + this.idGameplay + '/scores/';
