@@ -260,7 +260,8 @@ astGame.prototype = {
             }
             else if (feedback[i]["final"])
             {
-                this.gameOver(feedback[i]["final"], feedback[i]["message"])
+                var win = (feedback[i]["final"] == "win");
+                this.gameOver(win, feedback[i]["message"]);
             }
             else {
                 this.displayFeedback(feedback[i]["message"], 
