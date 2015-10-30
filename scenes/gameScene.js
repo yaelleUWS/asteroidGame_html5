@@ -163,7 +163,7 @@ astGame.prototype = {
         
                 degrees = radians * (180/Math.PI);
                         
-                this.game.physics.arcade.velocityFromAngle(degrees, 100, bullets.children[i].body.velocity);
+                this.game.physics.arcade.velocityFromAngle(degrees, 400, bullets.children[i].body.velocity);
                 bullets.children[i].rotation = (degrees - 135) * Math.PI / 180;
             }
 
@@ -378,7 +378,7 @@ astGame.prototype = {
             bullet.kill();  
         }
     }, 
-    fireBullet: function (question) {
+    fireBullet: function () {
         bullet = bullets.create(planet.x, planet.y, "bullet");
         bullet.anchor.setTo(0.5,0.5);
         bullet.scale.setTo(0.25); 
@@ -390,19 +390,29 @@ astGame.prototype = {
     },
     submitAnswer: function () { 
         var assessment = allAssessments[allAssessments.length-1];
-        var translate = assessment["translate"];
+        var translate = assessment["frenchWord"];
         var word = assessment["word"];
         var toTranslate = assessment["toTranslate"];
         var answer = $("#answer").val();
 
         var action = "translate";
+
+        // if word correctly translated, fire bullet
         if (toTranslate == translate)
         {
-            var values = {"translate": translate, "word": answer };
+            var values = {"frenchWord": translate, "word": answer };
+            if (answer == word)
+            {
+                this.fireBullet();
+            }
         }
         else
         {
-            var values = {"translate": answer, "word": word };            
+            var values = {"frenchWord": answer, "word": word };    
+            if (answer == translate)
+            {
+                this.fireBullet();
+            }        
         }
 
         var astgame = this;
@@ -434,7 +444,7 @@ astGame.prototype = {
         {
             var choice = allWords[this.getRandomInt(0, allWords.length-1)];
 
-            var translate = choice["translate"];
+            var translate = choice["frenchWord"];
             var word = choice["word"];            
         }
 
