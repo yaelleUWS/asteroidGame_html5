@@ -8,7 +8,7 @@ var login = function(game){
     password_inputText = "";
     
     // Set the unique ID for your serious game  
-    idSG = 187;
+    idSG = 195;
 
 	session = {};
 };

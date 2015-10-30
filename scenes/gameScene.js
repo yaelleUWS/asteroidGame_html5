@@ -23,8 +23,7 @@ var astGame = function(game){
     allAnswers = [];
     allAssessments = [];
 
-    posibleQuestions = [];
-    posibleMathEquations = [];
+    allWords = [];
 
     var lastQuestion;
     var lastAction;
@@ -96,15 +95,7 @@ astGame.prototype = {
         var astgame = this;
         session.getGame()
             .done(function(sg){
-                if (sg["evidenceModel"]["answerMathEquation"])
-                {
-                    astgame.initialiseMathEquations(sg["evidenceModel"]["answerMathEquation"]["reactions"]);
-                }
-                if (sg["evidenceModel"]["answerQuestion"])
-                {
-                    astgame.initialiseQuestions(sg["evidenceModel"]["answerQuestion"]["reactions"]);
-                }
-                astgame.initialiseAsteroidColours();
+                astgame.initialiseWords(sg["evidenceModel"]["translate"]["reactions"]);
             });
 
         // *** The scores ***
@@ -163,7 +154,7 @@ astGame.prototype = {
                 degrees = radians * (180/Math.PI);
                         
                 // 23/30 is good spped
-                this.game.physics.arcade.velocityFromAngle(degrees, 40 * speedSlow, asteroids.children[i].body.velocity);
+                this.game.physics.arcade.velocityFromAngle(degrees, 30 * speedSlow, asteroids.children[i].body.velocity);
             }
 
             // *** Move bullet towards asteroid ***
@@ -172,8 +163,8 @@ astGame.prototype = {
         
                 degrees = radians * (180/Math.PI);
                         
-                // 23/30 is good spped
                 this.game.physics.arcade.velocityFromAngle(degrees, 100, bullets.children[i].body.velocity);
+                bullets.children[i].rotation = (degrees - 135) * Math.PI / 180;
             }
 
 
@@ -182,37 +173,21 @@ astGame.prototype = {
         }
     },
     speedGame: function() {
-        speedSlow = 1.5;
+        speedSlow += speedSlow/4;
     },
     slowGame: function() {
-        speedSlow = 0.5;
-    },
-    initialiseMathEquations: function(mathReactions) {
-        for (var i=0 ; i<mathReactions.length ; i++)
+        speedSlow -= speedSlow/4;
+        if (speedSlow <= 0)
         {
-            if (mathReactions[i] && mathReactions[i]["values"])
-            {
-                posibleMathEquations = posibleMathEquations.concat(mathReactions[i]["values"]);
-            }
+            speedSlow = 0.1;
         }
     },
-    initialiseQuestions: function(questionReactions) {
-        for (var i=0 ; i<questionReactions.length ; i++)
+    initialiseWords: function(reactions) {
+        for (var i=0 ; i<reactions.length ; i++)
         {
-            if (questionReactions[i] && questionReactions[i]["values"])
+            if (reactions[i] && reactions[i]["values"])
             {
-                posibleQuestions = posibleQuestions.concat(questionReactions[i]["values"]);
-            }
-        }
-    },
-    initialiseAsteroidColours: function() {
-        availableChoices = posibleMathEquations.concat(posibleQuestions);
-        for (var i=0 ; i<availableChoices.length ; i++)
-        {
-            if (posibleColours.indexOf(availableChoices[i]["asteroidColor"]) < 0)
-            {
-                posibleColours.push(availableChoices[i]["asteroidColor"]);
-                colourScoreValues.push("0");
+                allWords = allWords.concat(reactions[i]["values"]);
             }
         }
     },
@@ -233,32 +208,9 @@ astGame.prototype = {
                 initialScore = scoreValue;
                 score = scoreValue;
             }
-            else
-            {
-                for (var i = 0 ; i<posibleColours.length ; i++)
-                {
-                    if (scoreName == posibleColours[i])
-                    {
-                        colourScoreValues[i] = scoreValue + "";
-                    }
-                }
-            }
         }
 
-        var detailedScore = "";
-        for (var c = 0 ; c<posibleColours.length ; c++)
-        {
-            detailedScore += (c ==posibleColours.length -1)? colourScoreValues[c] : colourScoreValues[c] + ", ";
-        }
-        var detailedScoreText = (posibleColours.length>0)? " (" + detailedScore + ")" : "";
-        scoreText.text = score + detailedScoreText;
-
-        for (var c = 0 ; c<posibleColours.length ; c++)
-        {
-            var indexColour = 3+3*c;
-            scoreText.addColor(posibleColours[c], indexColour);
-        }
-        scoreText.addColor("white", scoreText.text.length-1);
+        scoreText.text = score;
 
         heathText.text = health + ' / ' + initialHealth;
     },
@@ -277,24 +229,8 @@ astGame.prototype = {
             {
                 score = scoreValue;
             }
-            else
-            {
-                for (var i = 0 ; i<posibleColours.length ; i++)
-                {
-                    if (scoreName == posibleColours[i])
-                    {
-                        colourScoreValues[i] = scoreValue;
-                    }
-                }
-            }
         }
-        var detailedScore = "";
-        for (var c = 0 ; c<posibleColours.length ; c++)
-        {
-            detailedScore += (c ==posibleColours.length -1)? colourScoreValues[c] : colourScoreValues[c] + ", ";
-        }
-        var detailedScoreText = (posibleColours.length>0)? " (" + detailedScore + ")" : "";
-        scoreText.text = score + detailedScoreText; 
+        scoreText.text = score; 
         heathText.text = health + ' / ' + initialHealth;
 
         var newWidthRatioHealthBar = (health / initialHealth);
@@ -321,8 +257,6 @@ astGame.prototype = {
                 {
                     this.loseBullet();
                 }
-                this.displayFeedback(feedback[i]["message"],  
-                                               feedback[i]["type"]);
             }
             else if (feedback[i]["final"])
             {
@@ -335,22 +269,25 @@ astGame.prototype = {
         }
     },
     displayFeedback: function(feedback, type) {
+        var color = "black";
         if (type.toUpperCase() == "POSITIVE")
         {
-            $("#feedback").append('<li style="color: green;">' + feedback + '</li>');
+            color = "green";
         }
         else if (type.toUpperCase() == "NEGATIVE")
         {
-            $("#feedback").append('<li style="color: red;">' + feedback + '</li>');
+            color = "red";
         }
         else if (type.toUpperCase() == "ADAPTATION")
         {
-            $("#feedback").append('<li style="color: blue;">' + feedback + '</li>');
+            color = "blue";
         }
-        else
-        {
-            $("#feedback").append('<li style="color: black;">' + feedback + '</li>');
-        }
+
+        // get time
+        var dt = new Date();
+        var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+
+        $("#feedback").prepend('<li style="color: '+color+';">' + time + ' - ' + feedback + '</li>');
     },
     gameOver: function(win, textFeedback) {
 
@@ -401,7 +338,7 @@ astGame.prototype = {
             var assessment = allAssessments[index];
             var correctAnswer = allAnswers[index];
 
-            var values = {"question": assessment["question"], "answer": correctAnswer, "asteroidColor": assessment["asteroidColor"]};
+            var values = {"word": assessment["word"], "translation": correctAnswer };
             var action = "planetHit";
 
             var astgame = this;
@@ -453,27 +390,20 @@ astGame.prototype = {
     },
     submitAnswer: function () { 
         var assessment = allAssessments[allAssessments.length-1];
-        var question = assessment["question"];
+        var translate = assessment["translate"];
+        var word = assessment["word"];
+        var toTranslate = assessment["toTranslate"];
         var answer = $("#answer").val();
-        var colour = assessment["asteroidColor"];
-        var correctAnswer = allAnswers[allAssessments.length-1];
 
-        var action = "answerQuestion";
-        var values = {"question": question, "answer": answer, "asteroidColor": colour};
-
-        // assess action with EngAGe
-        if (assessment["sign"])
+        var action = "translate";
+        if (toTranslate == translate)
         {
-            action = "answerMathEquation";
-            var isAnswerCorrect = (answer == correctAnswer);
-           // values = {"sign": assessment["sign"], "question": question, "answer": answer, 
-            //                            "answerCorrect": isAnswerCorrect, "asteroidColor": colour};
-            values = {"sign": assessment["sign"], "answerCorrect": isAnswerCorrect, "asteroidColor": colour};
+            var values = {"translate": translate, "word": answer };
         }
-
-
-        console.log(action);
-        console.log(values);
+        else
+        {
+            var values = {"translate": answer, "word": word };            
+        }
 
         var astgame = this;
         gameplay.assess(action, values)
@@ -495,48 +425,17 @@ astGame.prototype = {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
     createAsteroid: function(){
-        availableChoices = posibleMathEquations.concat(posibleQuestions);
-
-        if (availableChoices.length == 0 )
+        
+        if (allWords.length == 0 )
         {
             return;
         }
         else 
         {
-            var choice = availableChoices[this.getRandomInt(0, availableChoices.length-1)];
+            var choice = allWords[this.getRandomInt(0, allWords.length-1)];
 
-            var question = choice["question"];
-            var sign = choice["sign"];
-            var answer = choice["answer"];
-            var asteroidColor = choice["asteroidColor"];
-            var correctAnswer = answer;
-
-            switch(sign) {
-                case "multiplication":
-                    var1 = this.getRandomInt(0, 10);
-                    var2 = this.getRandomInt(0, 10);
-                    question = var1 + " x " + var2 + " = ?";
-                    correctAnswer = var1 * var2;
-                    break;
-                case "division":
-                    var2 = this.getRandomInt(1, 10);
-                    var1 = var2 * this.getRandomInt(0, 10);
-                    question = var1 + " / " + var2 + " = ?";
-                    correctAnswer = var1 / var2;
-                    break;
-                case "addition":
-                    var1 = this.getRandomInt(0, 10);
-                    var2 = this.getRandomInt(0, 10);
-                    question = var1 + " + " + var2 + " = ?";
-                    correctAnswer = var1 + var2;
-                    break;
-                case "substraction":
-                    var1 = this.getRandomInt(0, 10);
-                    var2 = this.getRandomInt(0, 10);
-                    question = var1 + " - " + var2 + " = ?";
-                    correctAnswer = var1 - var2;
-                    break;
-            }
+            var translate = choice["translate"];
+            var word = choice["word"];            
         }
 
         var randomStartPosition = this.getRandomInt(0,3);
@@ -566,12 +465,19 @@ astGame.prototype = {
                 break;
         }
 
+        // select asteroid color (blue for french, grey for other)
+
+        var randomLanguage = this.getRandomInt(0,1);
+        asteroidColor = (randomLanguage == 0)? "blue" : "grey";
+        toTranslate = (randomLanguage == 0)? translate : word;
+        correctAnswer = (randomLanguage == 0)? word : translate;
+
         ast = asteroids.create(xAsteroid, yAsteroid, asteroidColor);
         ast.anchor.setTo(0.5,0.5);
         ast.scale.setTo(0.25); 
         allAsteroids.push(ast);
 
-        astText = this.game.add.text(0, 0, question, { font: 'bold 12pt Arial', fill: 'black', backgroundColor: asteroidColor });
+        astText = this.game.add.text(0, 0, toTranslate, { font: 'bold 12pt Arial', fill: 'black', backgroundColor: asteroidColor });
         astText.anchor.setTo(0.5, 0.5);
         asteroids.add(astText);
         allAsteroidTexts.push(astText);
@@ -580,7 +486,7 @@ astGame.prototype = {
         astText.y = Math.floor(ast.y + ast.height / 2);
 
         // store assessment data
-        choice["question"] = question;
+        choice["toTranslate"] = toTranslate;
         allAssessments.push(choice);
         allAnswers.push(correctAnswer);
 
