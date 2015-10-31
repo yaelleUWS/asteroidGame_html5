@@ -51,6 +51,7 @@ astGame.prototype = {
     },
   	create: function() {
         isGameOver = false;
+        speedSlow = 1;
 
         // *** feedback panel ***
         $("#feedback").empty();
